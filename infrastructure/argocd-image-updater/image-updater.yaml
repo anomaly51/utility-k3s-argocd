@@ -1,0 +1,36 @@
+  apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+  kind: ImageUpdater
+  metadata:
+    name: utility-app-images
+    namespace: argocd
+    annotations:
+      argocd.argoproj.io/sync-wave: "2"
+      argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  spec:
+    commonUpdateSettings:
+      updateStrategy: newest-build
+      allowTags: regexp:^main-[0-9]+-[a-f0-9]{40}$
+      ignoreTags:
+        - latest
+        - dev
+        - test
+      pullSecret: pullsecret:argocd/harbor-pull-secret
+    writeBackConfig:
+      method: git
+      gitConfig:
+        repository: https://github.com/anomaly51/utility-k3s-argocd.git
+        branch: main
+    applicationRefs:
+    - namePattern: downloader-sloniara-bot
+      writeBackConfig:
+        method: git
+        gitConfig:
+          repository: https://github.com/anomaly51/utility-k3s-argocd.git
+          branch: main
+          writeBackTarget: kustomization:./apps/downloader-sloniara-bot
+      images:
+- alias: bot
+  imageName: harbor.api-api-api.com/downloader-sloniara-bot/bot:main-43-d9d0a602bbb6c97911080dee2c8612a41a25af99
+  manifestTargets:
+    kustomize:
+      name: harbor.api-api-api.com/downloader-sloniara-bot/bot

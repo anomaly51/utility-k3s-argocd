@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: terraform-destroy-proxmox-vm
+  namespace: argo-workflows
+spec:
+  serviceAccountName: default
+  entrypoint: destroy-steps
+  arguments:
+    parameters:
+      - name: vm-name
+        value: "new-vm"
+  templates:
+    - name: destroy-steps
+      inputs:
+        parameters:
+          - name: vm-name
+      volumes:
+        - name: workspace
+          emptyDir: {}
+      containerSet:
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+        containers:
+          - name: clone
+            image: alpine/git:v2.43.0
+            env:
+              - name: GIT_TOKEN_P1
+                valueFrom:
+                  secretKeyRef:
+                    name: github-token
+                    key: token
+              - name: GIT_TOKEN_P2
+                value: ""
+            command: [sh, -c]
+            args:
+              - |
+                set -e
+                git clone https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/anomaly51/proxmox-vms-terraform.git /workspace/repo
+          - name: destroy
+            dependencies: [clone]
+            image: hashicorp/terraform:1.12.2
+            env:
+              - name: GIT_TOKEN_P1
+                valueFrom:
+                  secretKeyRef:
+                    name: github-token
+                    key: token
+              - name: GIT_TOKEN_P2
+                value: ""
+            envFrom:
+              - secretRef:
+                  name: terraform-state-minio
+            command: [sh, -c]
+            args:
+              - |
+                set -e
+                git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf "https://github.com/"
+                cd /workspace/repo/envs/shared/{{inputs.parameters.vm-name}}
+                bash ../../../scripts/terraform-init-minio.sh
+                terraform destroy -auto-approve
+          - name: commit
+            dependencies: [destroy]
+            image: alpine/git:v2.43.0
+            env:
+              - name: GIT_TOKEN_P1
+                valueFrom:
+                  secretKeyRef:
+                    name: github-token
+                    key: token
+              - name: GIT_TOKEN_P2
+                value: ""
+            command: [sh, -c]
+            args:
+              - |
+                set -e
+                cd /workspace/repo
+                git config --global user.name "Argo Workflows"
+                git config --global user.email "argo@devops.local"
+                git rm -rf envs/shared/{{inputs.parameters.vm-name}}/
+                git commit -m "feat: terraform destroy VM {{inputs.parameters.vm-name}} and remove state"
+                git push origin main

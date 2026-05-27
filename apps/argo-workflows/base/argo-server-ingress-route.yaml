@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argo-server-https
+  namespace: argo-workflows
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`argo-workflows.api-api-api.com`)
+      priority: 1000
+      services:
+        - name: argo-server
+          port: 2746
+          scheme: https
+          serversTransport: argo-server
+  tls:
+    secretName: argo-workflows-tls-secret

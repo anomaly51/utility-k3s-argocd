@@ -1,0 +1,334 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: proxmox-health
+    folder: Proxmox Alerts
+    interval: 1m
+    rules:
+      - uid: proxmox-node-down
+        title: Proxmox node down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: pve_up{id=~"node/.*"} == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        labels: {severity: critical, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox node is down according to pve exporter.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-guest-down
+        title: Proxmox guest down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: pve_up{id=~"qemu/.*|lxc/.*"} == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: warning, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox VM or LXC guest is down.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-qdevice-down
+        title: Proxmox qdevice down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: pve_qdevice_up == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox qdevice is down.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-cpu-high
+        title: Proxmox CPU usage above 90 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: pve_cpu_usage_ratio * 100 > 90
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox node or guest CPU usage is above 90 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-memory-high
+        title: Proxmox memory usage above 90 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * pve_memory_usage_bytes / pve_memory_size_bytes > 90
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox node or guest memory usage is above 90 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-disk-high-warning
+        title: Proxmox disk usage above 85 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * pve_disk_usage_bytes / pve_disk_size_bytes > 85
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox storage usage is above 85 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-disk-high-critical
+        title: Proxmox disk usage above 95 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * pve_disk_usage_bytes / pve_disk_size_bytes > 95
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox storage usage is above 95 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: proxmox-backup-missing
+        title: Proxmox guest backup missing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: pve_not_backed_up_total > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels: {severity: warning, team: platform, scope: proxmox}
+        annotations:
+          summary: Proxmox exporter reports guests without backups.
+          runbook_url: https://grafana.api-api-api.com

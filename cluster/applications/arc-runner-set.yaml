@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: arc-runner-set
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: '56'
+spec:
+  project: gitops-apps
+  source:
+    repoURL: ghcr.io/actions/actions-runner-controller-charts
+    chart: gha-runner-scale-set
+    targetRevision: "*"
+    helm:
+      releaseName: anomaly51-runner
+      values: |
+        githubConfigUrl: https://github.com/anomaly51
+        githubConfigSecret: arc-github-token
+        controllerServiceAccount:
+          namespace: arc-systems
+          name: arc-gha-rs-controller
+        template:
+          spec:
+            nodeSelector:
+              kubernetes.io/hostname: utility-k3s-worker-2
+            containers:
+            - name: runner
+              image: ghcr.io/actions/actions-runner:latest
+              command:
+              - "/home/runner/run.sh"
+              envFrom:
+              - secretRef:
+                  name: architect-business-bot-ci-telegram
+        containerMode:
+          type: dind
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: arc-runners
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

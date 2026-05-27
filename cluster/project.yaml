@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gitops-apps
+  namespace: argocd
+spec:
+  description: Applications managed by this cluster GitOps repository.
+  sourceRepos:
+  - https://github.com/anomaly51/utility-k3s-argocd.git
+  - https://charts.jetstack.io
+  - https://charts.external-secrets.io
+  - https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+  - https://kubernetes-sigs.github.io/external-dns/
+  - https://prometheus-community.github.io/helm-charts
+  - https://grafana.github.io/helm-charts
+  - https://helm.releases.hashicorp.com
+  - https://helm.goharbor.io
+  - https://helm.elastic.co
+  - ghcr.io/actions/actions-runner-controller-charts
+  destinations:
+  - server: https://kubernetes.default.svc
+    namespace: "*"
+  clusterResourceWhitelist:
+  - group: "*"
+    kind: "*"
+  namespaceResourceWhitelist:
+  - group: "*"
+    kind: "*"

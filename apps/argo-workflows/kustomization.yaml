@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argo-workflows
+
+resources:
+  - base/namespace.yaml
+  - base/workflow-rbac.yaml
+  - base/argo-server-transport.yaml
+  - https://github.com/argoproj/argo-workflows/releases/download/v3.5.5/install.yaml
+  - base/argo-server-ingress.yaml
+  - base/argo-server-ingress-route.yaml
+  - terraform-state-external-secret.yaml
+  - workflows/vm-provision-template.yaml
+  - workflows/vm-destroy-template.yaml
+  - workflows/cluster-empty-provision-template.yaml
+  - workflows/cluster-argocd-provision-template.yaml
+  - workflows/cluster-destroy-template.yaml
+
+patches:
+  - path: base/argo-server-patch.yaml
+    target:
+      kind: Deployment
+      name: argo-server

@@ -1,0 +1,56 @@
+apiVersion: 1
+templates:
+  - orgId: 1
+    name: telegram-platform-template
+    template: |
+      {{ define "telegram.platform.message" -}}
+      {{- if gt (len .Alerts.Firing) 0 -}}
+      🔥 FIRING: {{ len .Alerts.Firing }} alert(s)
+      {{ range .Alerts.Firing }}
+
+      {{ template "telegram.platform.alert" . }}
+      {{ end -}}
+      {{ end -}}
+      {{- if gt (len .Alerts.Resolved) 0 -}}
+      ✅ RESOLVED: {{ len .Alerts.Resolved }} alert(s)
+      {{ range .Alerts.Resolved }}
+
+      {{ template "telegram.platform.alert" . }}
+      {{ end -}}
+      {{ end -}}
+      {{- end }}
+
+      {{ define "telegram.platform.alert" -}}
+      {{- $severity := index .Labels "severity" -}}
+      {{- if eq $severity "critical" }}🚨{{ else if eq $severity "warning" }}⚠️{{ else }}ℹ️{{ end }} {{ index .Labels "alertname" }}
+      ━━━━━━━━━━━━━━━━━━━━
+      {{- with index .Labels "grafana_folder" }}
+      📁 Folder: {{ . }}{{ end }}
+      {{- with index .Labels "cluster" }}
+      🧩 Cluster: {{ . }}{{ end }}
+      {{- with index .Labels "namespace" }}
+      📦 Namespace: {{ . }}{{ end }}
+      {{- with index .Labels "pod" }}
+      🧱 Pod: {{ . }}{{ end }}
+      {{- with index .Labels "instance" }}
+      🖥️ Instance: {{ . }}{{ end }}
+      {{- with index .Labels "id" }}
+      🆔 ID: {{ . }}{{ end }}
+      {{- with index .Labels "job" }}
+      ⚙️ Job: {{ . }}{{ end }}
+      {{- with index .Labels "scope" }}
+      🔎 Scope: {{ . }}{{ end }}
+      {{- with $severity }}
+      🏷️ Severity: {{ . }}{{ end }}
+      {{- with .Annotations.summary }}
+
+      📝 {{ . }}{{ end }}
+      {{- with .ValueString }}
+
+      📊 Value: {{ . }}{{ end }}
+      {{- with .GeneratorURL }}
+
+      🔗 Source: {{ . }}{{ end }}
+      {{- with .SilenceURL }}
+      🔕 Silence: {{ . }}{{ end }}
+      {{- end }}

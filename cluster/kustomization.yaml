@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - project.yaml
+  - applications/cert-manager.yaml
+  - applications/external-secrets.yaml
+  - applications/nfs-provisioner.yaml
+  - applications/vault-store.yaml
+  - applications/cert-manager-issuers.yaml
+  - applications/argocd-image-updater.yaml
+  - applications/cloudflared.yaml
+  - applications/external-dns-config.yaml
+  - applications/external-dns.yaml
+  - applications/argo-workflows.yaml
+  - applications/arc-config.yaml
+  - applications/arc-controller.yaml
+  - applications/arc-runner-set.yaml
+  - applications/downloader-sloniara-bot.yaml
+  - applications/elk.yaml
+  - applications/elasticsearch.yaml
+  - applications/grafana-config.yaml
+  - applications/grafana.yaml
+  - applications/harbor.yaml
+  - applications/kibana.yaml
+  - applications/logstash.yaml
+  - applications/loki.yaml
+  - applications/minio.yaml
+  - applications/obsidian-livesync.yaml
+  - applications/prometheus.yaml
+  - applications/proxmox-exporter.yaml
+  - applications/vault.yaml

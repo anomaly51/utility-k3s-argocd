@@ -1,0 +1,1395 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: cluster-ingestion
+    folder: Kubernetes Alerts
+    interval: 1m
+    rules:
+      - uid: k8s-utility-metrics-missing
+        title: Utility cluster metrics missing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: absent(up{cluster="utility-k3s"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: A
+              reducer: last
+              type: reduce
+              refId: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: monitoring}
+        annotations:
+          summary: Utility cluster stopped sending metrics to central Prometheus.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-workload-1-metrics-missing
+        title: Workload 1 cluster metrics missing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: absent(up{cluster="workload-1-k3s"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: A
+              reducer: last
+              type: reduce
+              refId: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: monitoring}
+        annotations:
+          summary: Workload 1 cluster stopped sending metrics to central Prometheus.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-workload-2-metrics-missing
+        title: Workload 2 cluster metrics missing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: absent(up{cluster="workload-2-k3s"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: A
+              reducer: last
+              type: reduce
+              refId: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: monitoring}
+        annotations:
+          summary: Workload 2 cluster stopped sending metrics to central Prometheus.
+          runbook_url: https://grafana.api-api-api.com
+
+  - orgId: 1
+    name: kubernetes-health
+    folder: Kubernetes Alerts
+    interval: 1m
+    rules:
+      - uid: k8s-api-server-down
+        title: Kubernetes API server down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: up{job="kubernetes-api-servers",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        labels: {severity: critical, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes API server target is down.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-prometheus-target-down
+        title: Prometheus target down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: up{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: warning, team: platform, scope: monitoring}
+        annotations:
+          summary: A Prometheus scrape target is down.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-node-not-ready
+        title: Kubernetes node not ready
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_node_status_condition{condition="Ready",status="true",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes node is not Ready.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-node-disk-pressure
+        title: Kubernetes node disk pressure
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_node_status_condition{condition="DiskPressure",status="true",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes node reports DiskPressure.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-node-memory-pressure
+        title: Kubernetes node memory pressure
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_node_status_condition{condition="MemoryPressure",status="true",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes node reports MemoryPressure.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-node-pid-pressure
+        title: Kubernetes node PID pressure
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_node_status_condition{condition="PIDPressure",status="true",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes node reports PIDPressure.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-node-unschedulable
+        title: Kubernetes node unschedulable
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_node_spec_unschedulable{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels: {severity: info, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes node is cordoned or otherwise unschedulable.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-pod-crashlooping
+        title: Pod CrashLoopBackOff
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m]) >= 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: kubernetes}
+        annotations:
+          summary: Pod container is in CrashLoopBackOff.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-pod-restarts-high
+        title: Pod restart rate high
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 900, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: increase(kube_pod_container_status_restarts_total{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[15m]) > 3
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Pod container restarted more than 3 times in 15 minutes.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-pod-bad-phase
+        title: Pod pending unknown or failed
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_pod_status_phase{phase=~"Pending|Unknown|Failed",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Pod is Pending, Unknown, or Failed.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-deployment-unavailable
+        title: Deployment replicas unavailable
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_deployment_status_replicas_unavailable{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Deployment has unavailable replicas.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-statefulset-unavailable
+        title: StatefulSet replicas unavailable
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_statefulset_status_replicas_ready{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} < kube_statefulset_status_replicas{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: critical, team: platform, scope: kubernetes}
+        annotations:
+          summary: StatefulSet has unavailable replicas.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-daemonset-unavailable
+        title: DaemonSet pods unavailable
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_daemonset_status_number_unavailable{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: DaemonSet has unavailable pods.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-job-failed
+        title: Kubernetes job failed
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_job_status_failed{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: warning, team: platform, scope: kubernetes}
+        annotations:
+          summary: Kubernetes Job reports failures.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-oom-killed
+        title: Container OOMKilled
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 900, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: increase(kube_pod_container_status_last_terminated_reason{reason="OOMKilled",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[15m]) > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        labels: {severity: critical, team: platform, scope: kubernetes}
+        annotations:
+          summary: Container was OOMKilled.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-pvc-pending
+        title: PVC pending
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: kube_persistentvolumeclaim_status_phase{phase="Pending",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} == 1
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: critical, team: platform, scope: storage}
+        annotations:
+          summary: PersistentVolumeClaim is stuck Pending.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-pvc-space-low-warning
+        title: PVC free space below 15 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * kubelet_volume_stats_available_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} / kubelet_volume_stats_capacity_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} < 15
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: warning, team: platform, scope: storage}
+        annotations:
+          summary: PVC has less than 15 percent free space.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: k8s-pvc-space-low-critical
+        title: PVC free space below 5 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * kubelet_volume_stats_available_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} / kubelet_volume_stats_capacity_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} < 5
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels: {severity: critical, team: platform, scope: storage}
+        annotations:
+          summary: PVC has less than 5 percent free space.
+          runbook_url: https://grafana.api-api-api.com
+
+  - orgId: 1
+    name: kubernetes-capacity
+    folder: Kubernetes Alerts
+    interval: 2m
+    rules:
+      - uid: node-cpu-high-warning
+        title: Node CPU usage above 85 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 - (avg by (cluster, instance) (rate(node_cpu_seconds_total{mode="idle",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m])) * 100) > 85
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: capacity}
+        annotations:
+          summary: Node CPU usage is above 85 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: node-cpu-high-critical
+        title: Node CPU usage above 95 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 - (avg by (cluster, instance) (rate(node_cpu_seconds_total{mode="idle",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m])) * 100) > 95
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: critical, team: platform, scope: capacity}
+        annotations:
+          summary: Node CPU usage is above 95 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: node-memory-high-warning
+        title: Node memory usage above 85 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * (1 - node_memory_MemAvailable_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} / node_memory_MemTotal_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}) > 85
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: capacity}
+        annotations:
+          summary: Node memory usage is above 85 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: node-memory-high-critical
+        title: Node memory usage above 95 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * (1 - node_memory_MemAvailable_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} / node_memory_MemTotal_bytes{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}) > 95
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: critical, team: platform, scope: capacity}
+        annotations:
+          summary: Node memory usage is above 95 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: node-filesystem-space-low-warning
+        title: Node filesystem free space below 15 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * node_filesystem_avail_bytes{fstype!~"tmpfs|overlay",mountpoint!~"/run.*|/var/lib/kubelet/pods.*",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay",mountpoint!~"/run.*|/var/lib/kubelet/pods.*",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} < 15
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: storage}
+        annotations:
+          summary: Node filesystem has less than 15 percent free space.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: node-filesystem-space-low-critical
+        title: Node filesystem free space below 5 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * node_filesystem_avail_bytes{fstype!~"tmpfs|overlay",mountpoint!~"/run.*|/var/lib/kubelet/pods.*",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay",mountpoint!~"/run.*|/var/lib/kubelet/pods.*",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} < 5
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: critical, team: platform, scope: storage}
+        annotations:
+          summary: Node filesystem has less than 5 percent free space.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: node-network-errors
+        title: Node network errors
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: rate(node_network_receive_errs_total{device!~"lo|veth.*|cali.*",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m]) + rate(node_network_transmit_errs_total{device!~"lo|veth.*|cali.*",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m]) > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: network}
+        annotations:
+          summary: Node network interface is reporting errors.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: cluster-cpu-requests-high
+        title: Cluster CPU requests above 85 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * sum by (cluster) (kube_pod_container_resource_requests{resource="cpu",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}) / sum by (cluster) (kube_node_status_allocatable{resource="cpu",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}) > 85
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels: {severity: warning, team: platform, scope: capacity}
+        annotations:
+          summary: Cluster CPU requests exceed 85 percent of allocatable CPU.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: cluster-memory-requests-high
+        title: Cluster memory requests above 85 percent
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: 100 * sum by (cluster) (kube_pod_container_resource_requests{resource="memory",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}) / sum by (cluster) (kube_node_status_allocatable{resource="memory",cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}) > 85
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels: {severity: warning, team: platform, scope: capacity}
+        annotations:
+          summary: Cluster memory requests exceed 85 percent of allocatable memory.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: container-cpu-throttling-high
+        title: Container CPU throttling high
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: sum by (cluster, namespace, pod, container) (rate(container_cpu_cfs_throttled_periods_total{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m])) / sum by (cluster, namespace, pod, container) (rate(container_cpu_cfs_periods_total{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"}[5m])) > 0.25
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels: {severity: warning, team: platform, scope: capacity}
+        annotations:
+          summary: Container CPU throttling ratio is above 25 percent.
+          runbook_url: https://grafana.api-api-api.com
+
+  - orgId: 1
+    name: platform-controllers
+    folder: Kubernetes Alerts
+    interval: 2m
+    rules:
+      - uid: cert-expiring-critical
+        title: Certificate expires within 7 days
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: certmanager_certificate_expiration_timestamp_seconds{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} - time() < 604800
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels: {severity: critical, team: platform, scope: certificates}
+        annotations:
+          summary: cert-manager certificate expires within 7 days.
+          runbook_url: https://grafana.api-api-api.com
+
+      - uid: cert-expiring-warning
+        title: Certificate expires within 14 days
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              datasource: {type: prometheus, uid: prometheus}
+              editorMode: code
+              expr: certmanager_certificate_expiration_timestamp_seconds{cluster=~"utility-k3s|workload-1-k3s|workload-2-k3s"} - time() < 1209600
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            model: {datasource: {type: __expr__, uid: __expr__}, expression: A, reducer: last, type: reduce, refId: B, intervalMs: 1000, maxDataPoints: 43200}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last}
+                  type: query
+              refId: C
+              intervalMs: 1000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 30m
+        labels: {severity: warning, team: platform, scope: certificates}
+        annotations:
+          summary: cert-manager certificate expires within 14 days.
+          runbook_url: https://grafana.api-api-api.com

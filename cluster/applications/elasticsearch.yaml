@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elasticsearch
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: '56'
+spec:
+  project: gitops-apps
+  source:
+    repoURL: https://helm.elastic.co
+    chart: elasticsearch
+    targetRevision: 8.5.1
+    helm:
+      releaseName: elasticsearch
+      values: |
+        replicas: 1
+        minimumMasterNodes: 1
+        protocol: http
+        createCert: false
+        esJavaOpts: "-Xms512m -Xmx512m"
+        antiAffinity: soft
+        esConfig:
+          elasticsearch.yml: |
+            xpack.security.enabled: false
+            xpack.security.enrollment.enabled: false
+        volumeClaimTemplate:
+          accessModes:
+          - ReadWriteOnce
+          storageClassName: nfs-client
+          resources:
+            requests:
+              storage: 10Gi
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elk
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

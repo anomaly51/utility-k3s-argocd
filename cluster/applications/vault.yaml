@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: '50'
+spec:
+  project: gitops-apps
+  source:
+    repoURL: https://helm.releases.hashicorp.com
+    chart: vault
+    targetRevision: 0.27.0
+    helm:
+      releaseName: vault
+      values: |
+        server:
+          dataStorage:
+            enabled: true
+            size: 5Gi
+            storageClass: nfs-client
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-production
+              external-dns.alpha.kubernetes.io/hostname: vault.api-api-api.com
+              external-dns.alpha.kubernetes.io/target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+              external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
+            hosts:
+            - host: vault.api-api-api.com
+              paths: []
+            tls:
+            - hosts:
+              - vault.api-api-api.com
+              secretName: vault-tls-secret
+        ui:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

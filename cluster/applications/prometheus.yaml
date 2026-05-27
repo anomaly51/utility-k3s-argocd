@@ -1,0 +1,116 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: '50'
+spec:
+  project: gitops-apps
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: prometheus
+    targetRevision: 29.7.0
+    helm:
+      releaseName: prometheus
+      values: |
+        alertmanager:
+          enabled: false
+        prometheus-pushgateway:
+          enabled: false
+        server:
+          extraFlags:
+          - web.enable-lifecycle
+          - web.enable-remote-write-receiver
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-production
+              external-dns.alpha.kubernetes.io/hostname: prometheus.api-api-api.com
+              external-dns.alpha.kubernetes.io/target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+              external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
+              traefik.ingress.kubernetes.io/router.entrypoints: websecure
+              traefik.ingress.kubernetes.io/router.tls: 'true'
+            hosts:
+            - prometheus.api-api-api.com
+            tls:
+            - secretName: prometheus-tls-secret
+              hosts:
+              - prometheus.api-api-api.com
+          persistentVolume:
+            enabled: true
+            size: 20Gi
+            storageClass: nfs-client
+          retention: 15d
+        scrapeConfigs:
+          prometheus:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-api-servers:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-nodes:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-nodes-cadvisor:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-service-endpoints:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-pods:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-pods-slow:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-service-endpoints-slow:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+          kubernetes-services:
+            metric_relabel_configs:
+            - target_label: cluster
+              replacement: utility-k3s
+        extraScrapeConfigs: |
+          - job_name: pve
+            metrics_path: /pve
+            params:
+              module: [default]
+              cluster: ['1']
+              node: ['1']
+            static_configs:
+              - targets:
+                  - 192.168.1.35
+            relabel_configs:
+              - source_labels: [__address__]
+                target_label: __param_target
+              - source_labels: [__param_target]
+                target_label: instance
+              - target_label: __address__
+                replacement: prometheus-pve-exporter.proxmox-exporter.svc.cluster.local:9221
+
+          - job_name: pve-exporter
+            static_configs:
+              - targets:
+                  - prometheus-pve-exporter.proxmox-exporter.svc.cluster.local:9221
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prometheus
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
