@@ -28,11 +28,21 @@ data:
         service: http://192.168.1.7
       - hostname: uptime-monitor.api-api-api.com
         service: http://192.168.1.7
+      - hostname: argocd-workload-1.api-api-api.com
+        service: https://192.168.1.81
+        originRequest:
+          noTLSVerify: true
+          httpHostHeader: argocd-workload-1.api-api-api.com
       - hostname: argocd-utility.api-api-api.com
-        service: https://192.168.1.7
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: argocd-utility.api-api-api.com
+      - hostname: argocd-workload-2.api-api-api.com
+        service: https://192.168.1.7
+        originRequest:
+          noTLSVerify: true
+          httpHostHeader: argocd-workload-2.api-api-api.com
       - hostname: vault.api-api-api.com
         service: http://traefik.kube-system.svc.cluster.local:80
       - hostname: harbor.api-api-api.com
