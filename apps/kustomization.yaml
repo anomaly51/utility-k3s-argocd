@@ -3,9 +3,6 @@ kind: Kustomization
 resources:
   - arc
   - argo-workflows
-  - cert-manager-config
-  - cloudflared
-  - external-dns
   - grafana
   - harbor
   - loki
@@ -14,6 +11,5 @@ resources:
   - prometheus
   - proxmox-exporter
   - vault
-  - vault-store
   - downloader-sloniara-bot
   - elk

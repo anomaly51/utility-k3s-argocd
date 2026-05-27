@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
     targetRevision: main
-    path: apps/cloudflared
+    path: infrastructure/cloudflared
   destination:
     server: https://kubernetes.default.svc
     namespace: cloudflared
