@@ -34,8 +34,6 @@ spec:
             transaction_retries: 10
           unified_alerting:
             enabled: true
-        deploymentStrategy:
-          type: Recreate
         sidecar:
           alerts:
             enabled: false
