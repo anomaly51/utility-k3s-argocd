@@ -38,7 +38,7 @@ spec:
           type: Recreate
         sidecar:
           alerts:
-            enabled: true
+            enabled: false
             label: grafana_alert
             labelValue: '1'
             searchNamespace: grafana
