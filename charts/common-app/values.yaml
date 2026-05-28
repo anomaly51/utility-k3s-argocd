@@ -1,0 +1,76 @@
+nameOverride: ""
+fullnameOverride: ""
+
+namespace:
+  create: true
+  name: ""
+  labels: {}
+  annotations: {}
+
+replicaCount: 1
+
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: harbor-pull-secret
+
+podAnnotations: {}
+podLabels: {}
+
+command: []
+args: []
+
+env: {}
+envList: []
+envFrom: []
+
+ports:
+  - name: http
+    containerPort: 80
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: http
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: traefik
+  host: ""
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: ""
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+
+resources: {}
+readinessProbe: {}
+livenessProbe: {}
+
+persistence:
+  enabled: false
+  name: data
+  mountPath: /data
+  size: 1Gi
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+
+configMaps: []
+externalSecrets: []
+extraVolumes: []
+extraVolumeMounts: []
+extraContainers: []
+initContainers: []
+
+extraObjects: []
+
+# For legacy migrations and highly custom apps. Rendered with Helm tpl.
+rawManifests: ""

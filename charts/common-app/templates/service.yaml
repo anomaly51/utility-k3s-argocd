@@ -1,0 +1,21 @@
+{{- if and .Values.service.enabled .Values.image.repository (not .Values.rawManifests) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common-app.fullname" . }}
+  namespace: {{ include "common-app.namespace" . }}
+  labels:
+    {{- include "common-app.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "common-app.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+{{- end }}

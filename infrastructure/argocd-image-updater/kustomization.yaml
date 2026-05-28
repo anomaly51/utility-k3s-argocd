@@ -6,6 +6,7 @@ namespace: argocd
 resources:
   - https://github.com/argoproj-labs/argocd-image-updater/config/default?ref=stable
   - harbor-pull-secret.yaml
+  - harbor-helm-repository.yaml
 
 patches:
   - target:

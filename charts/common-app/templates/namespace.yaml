@@ -1,0 +1,15 @@
+{{- if and .Values.namespace.create (include "common-app.namespace" .) }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "common-app.namespace" . }}
+  labels:
+    {{- include "common-app.labels" . | nindent 4 }}
+    {{- with .Values.namespace.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.namespace.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

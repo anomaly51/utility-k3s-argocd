@@ -9,10 +9,6 @@ metadata:
     argocd.argoproj.io/sync-wave: '52'
 spec:
   project: gitops-apps
-  source:
-    repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
-    targetRevision: main
-    path: apps/arc
   destination:
     server: https://kubernetes.default.svc
     namespace: arc-systems
@@ -33,3 +29,14 @@ spec:
     - CreateNamespace=true
     - ServerSideApply=true
     - SkipDryRunOnMissingResource=true
+  sources:
+  - repoURL: harbor.api-api-api.com/helm-charts
+    chart: common-app
+    targetRevision: 0.1.0
+    helm:
+      releaseName: arc
+      valueFiles:
+      - "$values/values/arc.yaml"
+  - repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
+    targetRevision: main
+    ref: values

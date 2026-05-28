@@ -9,10 +9,6 @@ metadata:
     argocd.argoproj.io/sync-wave: '60'
 spec:
   project: gitops-apps
-  source:
-    repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
-    targetRevision: main
-    path: apps/proxmox-exporter
   destination:
     server: https://kubernetes.default.svc
     namespace: proxmox-exporter
@@ -33,3 +29,14 @@ spec:
     - CreateNamespace=true
     - ServerSideApply=true
     - SkipDryRunOnMissingResource=true
+  sources:
+  - repoURL: harbor.api-api-api.com/helm-charts
+    chart: common-app
+    targetRevision: 0.1.0
+    helm:
+      releaseName: proxmox-exporter
+      valueFiles:
+      - "$values/values/proxmox-exporter.yaml"
+  - repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
+    targetRevision: main
+    ref: values

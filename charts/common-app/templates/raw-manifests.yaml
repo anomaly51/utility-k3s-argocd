@@ -1,0 +1,7 @@
+{{- with .Values.rawManifests }}
+{{- $raw := . }}
+{{- range $name, $image := $.Values.images }}
+{{- $raw = replace (printf "__IMAGE_%s__" $name) (printf "%s:%s" $image.repository $image.tag) $raw }}
+{{- end }}
+{{ $raw }}
+{{- end }}

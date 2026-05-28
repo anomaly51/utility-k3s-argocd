@@ -9,10 +9,6 @@ metadata:
     argocd.argoproj.io/sync-wave: '60'
 spec:
   project: gitops-apps
-  source:
-    repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
-    targetRevision: main
-    path: apps/grafana
   destination:
     server: https://kubernetes.default.svc
     namespace: grafana
@@ -33,3 +29,14 @@ spec:
     - CreateNamespace=true
     - ServerSideApply=true
     - SkipDryRunOnMissingResource=true
+  sources:
+  - repoURL: harbor.api-api-api.com/helm-charts
+    chart: common-app
+    targetRevision: 0.1.0
+    helm:
+      releaseName: grafana
+      valueFiles:
+      - "$values/values/grafana.yaml"
+  - repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
+    targetRevision: main
+    ref: values
