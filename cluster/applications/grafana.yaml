@@ -27,6 +27,9 @@ spec:
           server:
             domain: grafana.api-api-api.com
             root_url: https://grafana.api-api-api.com
+          database:
+            wal: false
+            cache_mode: private
           unified_alerting:
             enabled: true
         sidecar:
