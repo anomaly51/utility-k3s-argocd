@@ -33,7 +33,7 @@ spec:
             query_retries: 10
             transaction_retries: 10
           unified_alerting:
-            enabled: true
+            enabled: false
         sidecar:
           alerts:
             enabled: false
