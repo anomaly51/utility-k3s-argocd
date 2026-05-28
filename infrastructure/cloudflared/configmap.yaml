@@ -21,10 +21,12 @@ data:
       - hostname: hermes-agent.api-api-api.com
         service: http://192.168.1.7
       - hostname: obsidian-livesync.api-api-api.com
-        service: http://traefik.kube-system.svc.cluster.local:80
+        service: http://192.168.1.108
       - hostname: architect-business-bot.api-api-api.com
         service: http://192.168.1.7
       - hostname: pets-void.api-api-api.com
+        service: http://192.168.1.7
+      - hostname: pingme-backend.api-api-api.com
         service: http://192.168.1.7
       - hostname: uptime-monitor.api-api-api.com
         service: http://192.168.1.7
@@ -44,41 +46,41 @@ data:
           noTLSVerify: true
           httpHostHeader: argocd-workload-2.api-api-api.com
       - hostname: vault.api-api-api.com
-        service: http://traefik.kube-system.svc.cluster.local:80
+        service: http://192.168.1.108
       - hostname: harbor.api-api-api.com
-        service: http://traefik.kube-system.svc.cluster.local:80
+        service: http://192.168.1.108
       - hostname: argo-workflows.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: argo-workflows.api-api-api.com
       - hostname: kibana.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: kibana.api-api-api.com
       - hostname: elasticsearch.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: elasticsearch.api-api-api.com
       - hostname: logstash.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: logstash.api-api-api.com
       - hostname: prometheus.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: prometheus.api-api-api.com
       - hostname: grafana.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: grafana.api-api-api.com
       - hostname: loki.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
+        service: https://192.168.1.108
         originRequest:
           noTLSVerify: true
           httpHostHeader: loki.api-api-api.com
