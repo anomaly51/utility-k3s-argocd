@@ -13,7 +13,7 @@ spec:
       labels:
         app: cloudflared
       annotations:
-        config.kubernetes.io/reload: obsidian-livesync-route-v8
+        config.kubernetes.io/reload: utility-traefik-origin-v1
     spec:
       containers:
         - name: cloudflared
