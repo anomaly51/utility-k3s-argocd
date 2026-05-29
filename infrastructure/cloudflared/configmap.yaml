@@ -54,16 +54,6 @@ data:
         originRequest:
           noTLSVerify: true
           httpHostHeader: argo-workflows.api-api-api.com
-      - hostname: elasticsearch.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: elasticsearch.api-api-api.com
-      - hostname: logstash.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: logstash.api-api-api.com
       - hostname: prometheus.api-api-api.com
         service: https://traefik.kube-system.svc.cluster.local:443
         originRequest:

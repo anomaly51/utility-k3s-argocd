@@ -12,4 +12,3 @@ resources:
   - proxmox-exporter
   - vault
   - downloader-sloniara-bot
-  - elk
