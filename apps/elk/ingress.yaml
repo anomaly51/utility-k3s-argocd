@@ -1,38 +1,6 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kibana
-  namespace: elk
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
-    external-dns.alpha.kubernetes.io/hostname: kibana.api-api-api.com
-    external-dns.alpha.kubernetes.io/target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
-    external-dns.alpha.kubernetes.io/ttl: "120"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.middlewares: elk-elk-auth@kubernetescrd
-    traefik.ingress.kubernetes.io/router.tls: "true"
-spec:
-  ingressClassName: traefik
-  tls:
-    - secretName: kibana-tls-secret
-      hosts:
-        - kibana.api-api-api.com
-  rules:
-    - host: kibana.api-api-api.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: kibana-kibana
-                port:
-                  number: 5601
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: elasticsearch
   namespace: elk
   annotations:
@@ -93,4 +61,3 @@ spec:
                 name: logstash-logstash
                 port:
                   number: 8080
-

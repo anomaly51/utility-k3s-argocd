@@ -13,7 +13,7 @@ spec:
       labels:
         app: cloudflared
       annotations:
-        config.kubernetes.io/reload: utility-traefik-origin-v1
+        config.kubernetes.io/reload: remove-kibana-route-v1
     spec:
       containers:
         - name: cloudflared

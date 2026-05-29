@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - auth.yaml
-  - kibana-secrets.yaml
   - ingress.yaml
