@@ -16,7 +16,6 @@ resources:
   - applications/arc-config.yaml
   - applications/arc-controller.yaml
   - applications/arc-runner-set.yaml
-  - applications/downloader-sloniara-bot.yaml
   - applications/grafana-config.yaml
   - applications/grafana.yaml
   - applications/harbor.yaml

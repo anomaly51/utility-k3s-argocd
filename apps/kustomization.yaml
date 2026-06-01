@@ -11,4 +11,3 @@ resources:
   - prometheus
   - proxmox-exporter
   - vault
-  - downloader-sloniara-bot
