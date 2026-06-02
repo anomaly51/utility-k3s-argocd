@@ -13,6 +13,7 @@ resources:
   - applications/external-dns-config.yaml
   - applications/external-dns.yaml
   - applications/argo-workflows.yaml
+  - applications/blackbox-exporter.yaml
   - applications/arc-config.yaml
   - applications/arc-controller.yaml
   - applications/arc-runner-set.yaml

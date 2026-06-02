@@ -1,3 +1,4 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -16,6 +17,7 @@ spec:
     helm:
       releaseName: grafana
       values: |
+        ---
         adminPassword: admin
         envValueFrom:
           GF_ALERTING_TELEGRAM_BOT_TOKEN:
@@ -33,7 +35,7 @@ spec:
             query_retries: 10
             transaction_retries: 10
           unified_alerting:
-            enabled: false
+            enabled: true
         sidecar:
           alerts:
             enabled: false
@@ -126,6 +128,14 @@ spec:
               editable: true
               options:
                 path: "/var/lib/grafana/dashboards/applications"
+            - name: public-health
+              orgId: 1
+              folder: Applications
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: "/var/lib/grafana/dashboards/public-health"
         dashboardsConfigMaps:
           proxmox: grafana-proxmox-cluster-operations-dashboard
           kubernetes-fixed: grafana-kubernetes-fixed-dashboards
@@ -2593,6 +2603,420 @@ spec:
                   "uid": "proxmox-cluster-overview",
                   "version": 1
                 }
+          public-health:
+            public-health-checks:
+              json: |-
+                {
+                  "annotations": {
+                    "list": [
+                      {
+                        "builtIn": 1,
+                        "datasource": {
+                          "type": "grafana",
+                          "uid": "-- Grafana --"
+                        },
+                        "enable": true,
+                        "hide": true,
+                        "iconColor": "rgba(0, 211, 255, 1)",
+                        "name": "Annotations & Alerts",
+                        "type": "dashboard"
+                      }
+                    ]
+                  },
+                  "editable": true,
+                  "fiscalYearStartMonth": 0,
+                  "graphTooltip": 1,
+                  "id": null,
+                  "panels": [
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "prometheus"
+                      },
+                      "fieldConfig": {
+                        "defaults": {
+                          "mappings": [
+                            {
+                              "options": {
+                                "0": {
+                                  "text": "DOWN"
+                                },
+                                "1": {
+                                  "text": "UP"
+                                }
+                              },
+                              "type": "value"
+                            }
+                          ],
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "red",
+                                "value": null
+                              },
+                              {
+                                "color": "green",
+                                "value": 1
+                              }
+                            ]
+                          },
+                          "unit": "short"
+                        },
+                        "overrides": [
+
+                        ]
+                      },
+                      "gridPos": {
+                        "h": 8,
+                        "w": 24,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "id": 1,
+                      "options": {
+                        "colorMode": "background",
+                        "graphMode": "none",
+                        "justifyMode": "center",
+                        "orientation": "auto",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      },
+                      "targets": [
+                        {
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "editorMode": "code",
+                          "expr": "probe_success{job=\"public-health-checks\"}",
+                          "legendFormat": "{{ public_host }}",
+                          "range": true,
+                          "refId": "A"
+                        }
+                      ],
+                      "title": "Public /health status",
+                      "type": "stat"
+                    },
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "prometheus"
+                      },
+                      "fieldConfig": {
+                        "defaults": {
+                          "unit": "s"
+                        },
+                        "overrides": [
+
+                        ]
+                      },
+                      "gridPos": {
+                        "h": 8,
+                        "w": 12,
+                        "x": 0,
+                        "y": 8
+                      },
+                      "id": 2,
+                      "options": {
+                        "legend": {
+                          "calcs": [
+                            "lastNotNull",
+                            "max"
+                          ],
+                          "displayMode": "table",
+                          "placement": "bottom"
+                        },
+                        "tooltip": {
+                          "mode": "multi",
+                          "sort": "desc"
+                        }
+                      },
+                      "targets": [
+                        {
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "editorMode": "code",
+                          "expr": "probe_duration_seconds{job=\"public-health-checks\"}",
+                          "legendFormat": "{{ public_host }}",
+                          "range": true,
+                          "refId": "A"
+                        }
+                      ],
+                      "title": "Probe duration",
+                      "type": "timeseries"
+                    },
+                    {
+                      "datasource": {
+                        "type": "prometheus",
+                        "uid": "prometheus"
+                      },
+                      "fieldConfig": {
+                        "defaults": {
+                          "unit": "short"
+                        },
+                        "overrides": [
+
+                        ]
+                      },
+                      "gridPos": {
+                        "h": 8,
+                        "w": 12,
+                        "x": 12,
+                        "y": 8
+                      },
+                      "id": 3,
+                      "options": {
+                        "legend": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "displayMode": "table",
+                          "placement": "bottom"
+                        },
+                        "tooltip": {
+                          "mode": "multi",
+                          "sort": "desc"
+                        }
+                      },
+                      "targets": [
+                        {
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "editorMode": "code",
+                          "expr": "probe_http_status_code{job=\"public-health-checks\"}",
+                          "legendFormat": "{{ public_host }}",
+                          "range": true,
+                          "refId": "A"
+                        }
+                      ],
+                      "title": "HTTP status code",
+                      "type": "timeseries"
+                    }
+                  ],
+                  "refresh": "15s",
+                  "schemaVersion": 39,
+                  "tags": [
+                    "public-health",
+                    "blackbox",
+                    "synthetic"
+                  ],
+                  "templating": {
+                    "list": [
+
+                    ]
+                  },
+                  "time": {
+                    "from": "now-1h",
+                    "to": "now"
+                  },
+                  "timepicker": {
+                    "refresh_intervals": [
+                      "15s",
+                      "30s",
+                      "1m",
+                      "5m"
+                    ]
+                  },
+                  "timezone": "browser",
+                  "title": "Public Health Checks",
+                  "uid": "public-health-checks",
+                  "version": 1,
+                  "weekStart": ""
+                }
+        alerting:
+          contactpoints.yaml:
+            apiVersion: 1
+            contactPoints:
+            - orgId: 1
+              name: telegram-platform-alerts
+              receivers:
+              - uid: telegram-platform-alerts
+                type: telegram
+                disableResolveMessage: false
+                settings:
+                  chatid: "-5153526231"
+                  bottoken: "$GF_ALERTING_TELEGRAM_BOT_TOKEN"
+          policies.yaml:
+            apiVersion: 1
+            policies:
+            - orgId: 1
+              receiver: telegram-platform-alerts
+              group_by:
+              - grafana_folder
+              - alertname
+              - cluster
+              - public_host
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 4h
+              routes:
+              - receiver: telegram-platform-alerts
+                object_matchers:
+                - - severity
+                  - "="
+                  - critical
+                group_wait: 10s
+                group_interval: 2m
+                repeat_interval: 1h
+              - receiver: telegram-platform-alerts
+                object_matchers:
+                - - severity
+                  - "="
+                  - warning
+                group_wait: 30s
+                group_interval: 5m
+                repeat_interval: 4h
+          public-health-alerts.yaml:
+            apiVersion: 1
+            groups:
+            - orgId: 1
+              name: public-health
+              folder: Application Alerts
+              interval: 15s
+              rules:
+              - uid: public-health-endpoint-down
+                title: Public health endpoint down
+                condition: C
+                data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 300
+                    to: 0
+                  datasourceUid: prometheus
+                  model:
+                    datasource:
+                      type: prometheus
+                      uid: prometheus
+                    editorMode: code
+                    expr: probe_success{job="public-health-checks"} == 0
+                    instant: true
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: A
+                - refId: B
+                  datasourceUid: __expr__
+                  model:
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: A
+                    reducer: last
+                    type: reduce
+                    refId: B
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: B
+                    type: threshold
+                    conditions:
+                    - evaluator:
+                        type: gt
+                        params:
+                        - 0
+                      operator:
+                        type: and
+                      query:
+                        params:
+                        - C
+                      reducer:
+                        type: last
+                      type: query
+                    refId: C
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                noDataState: Alerting
+                execErrState: Error
+                for: 30s
+                labels:
+                  severity: critical
+                  team: platform
+                  scope: public-health
+                annotations:
+                  summary: Public /health check failed.
+                  runbook_url: https://grafana.api-api-api.com/d/public-health-checks
+              - uid: public-health-endpoint-slow
+                title: Public health endpoint slow
+                condition: C
+                data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 300
+                    to: 0
+                  datasourceUid: prometheus
+                  model:
+                    datasource:
+                      type: prometheus
+                      uid: prometheus
+                    editorMode: code
+                    expr: probe_duration_seconds{job="public-health-checks"} > 5
+                    instant: true
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: A
+                - refId: B
+                  datasourceUid: __expr__
+                  model:
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: A
+                    reducer: last
+                    type: reduce
+                    refId: B
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: B
+                    type: threshold
+                    conditions:
+                    - evaluator:
+                        type: gt
+                        params:
+                        - 0
+                      operator:
+                        type: and
+                      query:
+                        params:
+                        - C
+                      reducer:
+                        type: last
+                      type: query
+                    refId: C
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                noDataState: OK
+                execErrState: Error
+                for: 2m
+                labels:
+                  severity: warning
+                  team: platform
+                  scope: public-health
+                annotations:
+                  summary: Public /health check is slower than 5 seconds.
+                  runbook_url: https://grafana.api-api-api.com/d/public-health-checks
   destination:
     server: https://kubernetes.default.svc
     namespace: grafana

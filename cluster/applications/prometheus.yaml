@@ -1,3 +1,4 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -16,6 +17,7 @@ spec:
     helm:
       releaseName: prometheus
       values: |
+        ---
         alertmanager:
           enabled: false
         prometheus-pushgateway:
@@ -83,6 +85,40 @@ spec:
             - target_label: cluster
               replacement: utility-k3s
         extraScrapeConfigs: |
+          - job_name: public-health-checks
+            scrape_interval: 15s
+            scrape_timeout: 10s
+            metrics_path: /probe
+            params:
+              module: [http_2xx]
+            static_configs:
+              - targets:
+                  - https://shisha-guid-api.api-api-api.com/health
+                  - https://architect-business-bot.api-api-api.com/health
+                  - https://online-shop-api.api-api-api.com/health
+                  - https://pingme-backend.api-api-api.com/health
+                  - https://hermes-agent.api-api-api.com/health
+                  - https://uptime-monitor.api-api-api.com/health
+                  - https://pets-void.api-api-api.com/health
+                labels:
+                  cluster: utility-k3s
+                  scope: public-health
+            relabel_configs:
+              - source_labels: [__address__]
+                target_label: __param_target
+              - source_labels: [__param_target]
+                target_label: instance
+              - source_labels: [__param_target]
+                regex: https?://([^/]+).*
+                target_label: public_host
+                replacement: $1
+              - source_labels: [__param_target]
+                regex: https?://[^/]+(/.*)
+                target_label: check_path
+                replacement: $1
+              - target_label: __address__
+                replacement: blackbox-exporter-prometheus-blackbox-exporter.blackbox-exporter.svc.cluster.local:9115
+
           - job_name: pve
             metrics_path: /pve
             params:
@@ -114,3 +150,9 @@ spec:
     syncOptions:
     - CreateNamespace=true
     - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+  ignoreDifferences:
+  - kind: PersistentVolumeClaim
+    jsonPointers:
+    - "/spec/volumeName"
+    - "/spec/storageClassName"
