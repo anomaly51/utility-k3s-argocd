@@ -2849,6 +2849,48 @@ spec:
                 settings:
                   chatid: "-5153526231"
                   bottoken: "$GF_ALERTING_TELEGRAM_BOT_TOKEN"
+                  message: |
+                    {{`{{ template "telegram.platform.message" . }}`}}
+          templates.yaml:
+            apiVersion: 1
+            templates:
+            - orgId: 1
+              name: telegram-platform-template
+              template: |
+                {{`{{ define "telegram.platform.message" -}}`}}
+                {{`{{- if gt (len .Alerts.Firing) 0 -}}`}}
+                {{`{{ len .Alerts.Firing }} firing`}}
+                {{`{{ range .Alerts.Firing }}`}}
+                {{`{{ template "telegram.platform.alert" . }}`}}
+                {{`{{ end -}}`}}
+                {{`{{ end -}}`}}
+                {{`{{- if gt (len .Alerts.Resolved) 0 -}}`}}
+                {{`{{ len .Alerts.Resolved }} resolved`}}
+                {{`{{ range .Alerts.Resolved }}`}}
+                {{`{{ template "telegram.platform.alert" . }}`}}
+                {{`{{ end -}}`}}
+                {{`{{ end -}}`}}
+                {{`{{- end }}`}}
+
+                {{`{{ define "telegram.platform.alert" }}`}}
+                {{`{{- $alertname := index .Labels "alertname" -}}`}}
+                {{`{{- $severity := index .Labels "severity" -}}`}}
+                {{`{{- $host := or (index .Labels "public_host") (index .Labels "instance") -}}`}}
+                {{`{{ if eq .Status "firing" }}ALERT{{ else }}RESOLVED{{ end }}: {{ $alertname }}`}}
+                {{`{{ with $host }}`}}
+                host: {{`{{ . }}`}}{{`{{ end }}`}}
+                {{`{{ with index .Labels "check_path" }}`}}
+                path: {{`{{ . }}`}}{{`{{ end }}`}}
+                {{`{{ with $severity }}`}}
+                severity: {{`{{ . }}`}}{{`{{ end }}`}}
+                {{`{{ with .Annotations.summary }}`}}
+                {{`{{ . }}`}}{{`{{ end }}`}}
+                {{`{{ with .DashboardURL }}`}}
+                dashboard: {{`{{ . }}`}}{{`{{ else }}`}}{{`{{ with .Annotations.runbook_url }}`}}
+                dashboard: {{`{{ . }}`}}{{`{{ end }}`}}{{`{{ end }}`}}
+                {{`{{ with .SilenceURL }}`}}
+                silence: {{`{{ . }}`}}{{`{{ end }}`}}
+                {{`{{- end }}`}}
           policies.yaml:
             apiVersion: 1
             policies:
