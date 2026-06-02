@@ -2971,7 +2971,7 @@ spec:
                     maxDataPoints: 43200
                 noDataState: Alerting
                 execErrState: Error
-                for: 1m
+                for: 5m
                 labels:
                   severity: critical
                   team: platform
