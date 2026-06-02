@@ -3027,3 +3027,9 @@ spec:
     syncOptions:
     - CreateNamespace=true
     - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+  ignoreDifferences:
+  - kind: PersistentVolumeClaim
+    jsonPointers:
+    - "/spec/volumeName"
+    - "/spec/storageClassName"
