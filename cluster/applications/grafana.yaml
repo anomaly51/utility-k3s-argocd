@@ -2806,7 +2806,7 @@ spec:
                       "type": "timeseries"
                     }
                   ],
-                  "refresh": "15s",
+                  "refresh": "1m",
                   "schemaVersion": 39,
                   "tags": [
                     "public-health",
@@ -2824,8 +2824,6 @@ spec:
                   },
                   "timepicker": {
                     "refresh_intervals": [
-                      "15s",
-                      "30s",
                       "1m",
                       "5m"
                     ]
@@ -2914,7 +2912,7 @@ spec:
             - orgId: 1
               name: public-health
               folder: Application Alerts
-              interval: 30s
+              interval: 60s
               rules:
               - uid: public-health-endpoint-down
                 title: Public health endpoint down
@@ -2973,7 +2971,7 @@ spec:
                     maxDataPoints: 43200
                 noDataState: Alerting
                 execErrState: Error
-                for: 30s
+                for: 1m
                 labels:
                   severity: critical
                   team: platform

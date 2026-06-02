@@ -86,7 +86,7 @@ spec:
               replacement: utility-k3s
         extraScrapeConfigs: |
           - job_name: public-health-checks
-            scrape_interval: 15s
+            scrape_interval: 60s
             scrape_timeout: 10s
             metrics_path: /probe
             params:
