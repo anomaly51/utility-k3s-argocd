@@ -6,7 +6,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-production
     external-dns.alpha.kubernetes.io/hostname: argocd-utility.api-api-api.com
-    external-dns.alpha.kubernetes.io/target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+    external-dns.alpha.kubernetes.io/target: 1a6b03c9-00fc-48fa-af6f-b646c70ce361.cfargotunnel.com
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     external-dns.alpha.kubernetes.io/ttl: "120"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
