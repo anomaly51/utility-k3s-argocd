@@ -10,63 +10,8 @@ data:
     metrics: 0.0.0.0:2000
     no-autoupdate: true
     ingress:
-      - hostname: shisha-guid.api-api-api.com
-        service: http://192.168.1.81
-      - hostname: shisha-guid-api.api-api-api.com
-        service: http://192.168.1.81
-      - hostname: online-shop.api-api-api.com
-        service: http://192.168.1.81
-      - hostname: online-shop-api.api-api-api.com
-        service: http://192.168.1.81
-      - hostname: hermes-agent.api-api-api.com
-        service: http://192.168.1.7
-      - hostname: obsidian-livesync.api-api-api.com
-        service: http://traefik.kube-system.svc.cluster.local:80
-      - hostname: architect-business-bot.api-api-api.com
-        service: http://192.168.1.7
-      - hostname: pets-void.api-api-api.com
-        service: http://192.168.1.7
-      - hostname: pingme-backend.api-api-api.com
-        service: http://192.168.1.7
-      - hostname: uptime-monitor.api-api-api.com
-        service: http://192.168.1.7
-      - hostname: argocd-workload-1.api-api-api.com
-        service: https://192.168.1.81
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: argocd-workload-1.api-api-api.com
-      - hostname: argocd-utility.api-api-api.com
+      - hostname: "*.api-api-api.com"
         service: https://traefik.kube-system.svc.cluster.local:443
         originRequest:
           noTLSVerify: true
-          httpHostHeader: argocd-utility.api-api-api.com
-      - hostname: argocd-workload-2.api-api-api.com
-        service: https://192.168.1.7
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: argocd-workload-2.api-api-api.com
-      - hostname: vault.api-api-api.com
-        service: http://traefik.kube-system.svc.cluster.local:80
-      - hostname: harbor.api-api-api.com
-        service: http://traefik.kube-system.svc.cluster.local:80
-      - hostname: argo-workflows.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: argo-workflows.api-api-api.com
-      - hostname: prometheus.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: prometheus.api-api-api.com
-      - hostname: grafana.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: grafana.api-api-api.com
-      - hostname: loki.api-api-api.com
-        service: https://traefik.kube-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
-          httpHostHeader: loki.api-api-api.com
       - service: http_status:404
