@@ -21,35 +21,7 @@ argocd:
   tlsSecretName: argocd-api-tls-secret
 
 routes:
-  - hostname: argocd-utility.api-api-api.com
-  - hostname: vault.api-api-api.com
-  - hostname: harbor.api-api-api.com
-  - hostname: argo-workflows.api-api-api.com
-  - hostname: prometheus.api-api-api.com
-  - hostname: grafana.api-api-api.com
-  - hostname: loki.api-api-api.com
-  - hostname: argocd-workload-1.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: shisha-guid.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: shisha-guid-api.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: online-shop.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: online-shop-api.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: hermes-agent.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: obsidian-livesync.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: architect-business-bot.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: pets-void.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: pingme-backend.api-api-api.com
-    service: https://192.168.1.215
-  - hostname: uptime-monitor.api-api-api.com
-    service: https://192.168.1.215
+  - hostname: "*.api-api-api.com"
 
 resources:
   requests:
