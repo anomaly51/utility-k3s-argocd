@@ -9,7 +9,7 @@ app:
 
   image:
     repository: nginxdemos/hello
-    tag: "0.3"
+    tag: "0.4"
 
   selectorLabels:
     app: nginx-test-june-5
