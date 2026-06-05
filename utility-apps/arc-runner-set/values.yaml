@@ -3,7 +3,7 @@ gha-runner-scale-set:
   githubConfigSecret: arc-github-token
   controllerServiceAccount:
     namespace: arc-systems
-    name: arc-gha-rs-controller
+    name: arc-controller-gha-rs-controller
   template:
     spec:
       nodeSelector:
