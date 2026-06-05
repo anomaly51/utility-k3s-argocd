@@ -35,7 +35,7 @@ spec:
             app:
               cluster:
                 externalDns:
-                  target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+                  target: 1a6b03c9-00fc-48fa-af6f-b646c70ce361.cfargotunnel.com
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{ if eq .name "arc-config" }}arc-systems{{ else if eq .name "argo-workflows" }}argo{{ else }}{{ .name }}{{ end }}'
