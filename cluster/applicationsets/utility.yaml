@@ -22,7 +22,7 @@ spec:
       finalizers:
       - resources-finalizer.argocd.argoproj.io
       annotations:
-        argocd.argoproj.io/sync-wave: '{{ if or (eq .name "cert-manager") (eq .name "external-secrets") (eq .name "nfs-provisioner") }}10{{ else if eq .name "vault-store" }}20{{ else if eq .name "cert-manager-issuers" }}30{{ else if eq .name "argocd-registry-access" }}35{{ else if or (eq .name "cloudflared") (eq .name "external-dns") }}40{{ else if or (eq .name "harbor") (eq .name "prometheus") (eq .name "vault") }}50{{ else if or (eq .name "architect-business-bot-logs") (eq .name "arc-controller") (eq .name "grafana") (eq .name "loki") }}55{{ else if eq .name "arc-runner-set" }}56{{ else }}60{{ end }}'
+        argocd.argoproj.io/sync-wave: '{{ if or (eq .name "cert-manager") (eq .name "external-secrets") (eq .name "nfs-provisioner") }}10{{ else if eq .name "vault-store" }}20{{ else if eq .name "cert-manager-issuers" }}30{{ else if or (eq .name "cloudflared") (eq .name "external-dns") }}40{{ else if or (eq .name "harbor") (eq .name "vault") }}50{{ else if eq .name "arc-controller" }}55{{ else if eq .name "arc-runner-set" }}56{{ else }}60{{ end }}'
     spec:
       project: gitops-apps
       source:
@@ -33,7 +33,7 @@ spec:
           releaseName: "{{ .name }}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ if eq .name "argocd-registry-access" }}argocd{{ else if eq .name "arc-controller" }}arc-systems{{ else if eq .name "arc-runner-set" }}arc-runners{{ else if eq .name "architect-business-bot-logs" }}alloy{{ else if or (eq .name "cert-manager") (eq .name "cert-manager-issuers") }}cert-manager{{ else if eq .name "external-dns" }}external-dns{{ else if or (eq .name "external-secrets") (eq .name "vault-store") }}external-secrets{{ else if eq .name "harbor" }}harbor-system{{ else if eq .name "nfs-provisioner" }}nfs-system{{ else }}{{ .name }}{{ end }}'
+        namespace: '{{ if eq .name "arc-controller" }}arc-systems{{ else if eq .name "arc-runner-set" }}arc-runners{{ else if or (eq .name "cert-manager") (eq .name "cert-manager-issuers") }}cert-manager{{ else if eq .name "external-dns" }}external-dns{{ else if or (eq .name "external-secrets") (eq .name "vault-store") }}external-secrets{{ else if eq .name "harbor" }}harbor-system{{ else if eq .name "nfs-provisioner" }}nfs-system{{ else }}{{ .name }}{{ end }}'
       ignoreDifferences:
       - group: external-secrets.io
         kind: ExternalSecret
