@@ -37,12 +37,19 @@ spec:
       ignoreDifferences:
       - group: external-secrets.io
         kind: ExternalSecret
+        jqPathExpressions:
+        - ".spec.target.deletionPolicy"
+        - ".spec.data[].remoteRef.conversionStrategy"
+        - ".spec.data[].remoteRef.decodingStrategy"
+        - ".spec.data[].remoteRef.metadataPolicy"
+        - ".spec.data[].remoteRef.nullBytePolicy"
+      - group: apps
+        kind: StatefulSet
         jsonPointers:
-        - "/spec/target/deletionPolicy"
-        - "/spec/data/0/remoteRef/conversionStrategy"
-        - "/spec/data/0/remoteRef/decodingStrategy"
-        - "/spec/data/0/remoteRef/metadataPolicy"
-        - "/spec/data/0/remoteRef/nullBytePolicy"
+        - "/spec"
+      - kind: PersistentVolumeClaim
+        jsonPointers:
+        - "/spec"
       syncPolicy:
         automated:
           prune: true
@@ -51,3 +58,4 @@ spec:
         - CreateNamespace=true
         - ServerSideApply=true
         - SkipDryRunOnMissingResource=true
+        - RespectIgnoreDifferences=true
