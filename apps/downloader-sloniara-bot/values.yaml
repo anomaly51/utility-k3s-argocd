@@ -9,7 +9,7 @@ app:
 
   image:
     repository: harbor.api-api-api.com/downloader-sloniara-bot/bot
-    tag: main-43-d9d0a602bbb6c97911080dee2c8612a41a25af99
+    tag: sha-3c5bb1835af1
 
   containerName: bot
   selectorLabels:
