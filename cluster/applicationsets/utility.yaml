@@ -50,6 +50,12 @@ spec:
       - kind: PersistentVolumeClaim
         jsonPointers:
         - "/spec"
+      - group: storage.k8s.io
+        kind: StorageClass
+        jsonPointers:
+        - "/parameters"
+        - "/provisioner"
+        - "/reclaimPolicy"
       syncPolicy:
         automated:
           prune: true
