@@ -7,11 +7,14 @@ image:
   pullPolicy: IfNotPresent
 
 persistence:
-  storageClassName: nfs-client
+  storageClassName: local-path
   size: 30Gi
 
 service:
   port: 1234
+
+nodeSelector:
+  kubernetes.io/hostname: utility-k3s-worker-2
 
 hostAliases:
   - ip: "10.43.122.186"
