@@ -1,6 +1,7 @@
 gha-runner-scale-set:
   githubConfigUrl: https://github.com/anomaly51
   githubConfigSecret: arc-github-token
+  minRunners: 2
   controllerServiceAccount:
     namespace: arc-systems
     name: arc-controller-gha-rs-controller
