@@ -1,0 +1,23 @@
+---
+common-app:
+  namespace:
+    create: true
+    name: nginx-test
+
+  image:
+    repository: nginx
+    tag: 1.27-alpine
+
+  ports:
+    - name: http
+      containerPort: 80
+
+  service:
+    enabled: true
+    port: 80
+    targetPort: http
+
+  ingress:
+    enabled: true
+    host: nginx-test.api-api-api.com
+    tlsSecretName: nginx-test-tls
