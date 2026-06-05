@@ -1,0 +1,29 @@
+---
+app:
+  name: nginx-test-june-5
+  resourceName: nginx-test-june-5
+
+  namespace:
+    create: true
+    name: nginx-test-june-5
+
+  image:
+    repository: nginxdemos/hello
+    tag: "0.3"
+
+  selectorLabels:
+    app: nginx-test-june-5
+
+  ports:
+    - name: http
+      containerPort: 80
+
+  service:
+    enabled: true
+    port: 80
+    targetPort: http
+
+  ingress:
+    enabled: true
+    host: nginx-test-june-5.api-api-api.com
+    tlsSecretName: nginx-test-june-5-tls
