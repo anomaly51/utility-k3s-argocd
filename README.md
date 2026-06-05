@@ -25,6 +25,3 @@ Use these Vault access patterns:
 This keeps secret ownership centralized while allowing each workload cluster to
 reuse the same shared credentials, such as Cloudflare DNS and Harbor pull
 secrets, through its own `vault-store` release.
-
-_Update marker:_ repository layout unchanged; this is a harmless no-op edit for
-CI validation.
