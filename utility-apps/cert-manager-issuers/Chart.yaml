@@ -2,3 +2,8 @@ apiVersion: v2
 name: cert-manager-issuers
 version: 0.1.0
 type: application
+dependencies:
+- name: cert-manager-issuers
+  version: 0.1.0
+  repository: oci://harbor.api-api-api.com/helm-charts
+  alias: platform-cert-manager-issuers

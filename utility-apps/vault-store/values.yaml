@@ -1,1 +1,3 @@
-{}
+platform-vault-store:
+  vault:
+    server: http://vault.vault.svc.cluster.local:8200

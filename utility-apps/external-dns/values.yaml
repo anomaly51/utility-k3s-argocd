@@ -1,17 +1,3 @@
-external-dns:
-  provider:
-    name: cloudflare
-  env:
-  - name: CF_API_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: cloudflare-api-token
-        key: api-token
-  extraArgs:
-  - --cloudflare-proxied
-  domainFilters:
-  - api-api-api.com
-  txtOwnerId: utility-k3s
-  sources:
-  - ingress
-  policy: sync
+platform-external-dns:
+  external-dns:
+    txtOwnerId: utility-k3s

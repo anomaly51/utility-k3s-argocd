@@ -4,5 +4,6 @@ version: 0.1.0
 type: application
 dependencies:
 - name: external-secrets
-  version: 2.5.0
-  repository: https://charts.external-secrets.io
+  version: 0.1.0
+  repository: oci://harbor.api-api-api.com/helm-charts
+  alias: platform-external-secrets

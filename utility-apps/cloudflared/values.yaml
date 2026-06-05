@@ -1,31 +1,32 @@
-replicaCount: 2
+platform-cloudflared:
+  replicaCount: 2
 
-image:
-  repository: cloudflare/cloudflared
-  tag: 2026.5.0
+  image:
+    repository: cloudflare/cloudflared
+    tag: 2026.5.0
 
-metrics: 0.0.0.0:2000
-noAutoupdate: true
-defaultService: https://traefik.kube-system.svc.cluster.local:443
+  metrics: 0.0.0.0:2000
+  noAutoupdate: true
+  defaultService: https://traefik.kube-system.svc.cluster.local:443
 
-tunnel:
-  id: a6aaa50f-2590-4179-84f2-d0f18bce0587
-  target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+  tunnel:
+    id: a6aaa50f-2590-4179-84f2-d0f18bce0587
+    target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
 
-credentials:
-  vaultKey: utility/cloudflared
+  credentials:
+    vaultKey: utility/cloudflared
 
-argocd:
-  enabled: true
-  hostname: argocd-utility.api-api-api.com
-  tlsSecretName: argocd-api-tls-secret
+  argocd:
+    enabled: true
+    hostname: argocd-utility.api-api-api.com
+    tlsSecretName: argocd-api-tls-secret
 
-routes:
-  - hostname: "*.api-api-api.com"
+  routes:
+    - hostname: "*.api-api-api.com"
 
-resources:
-  requests:
-    cpu: 50m
-    memory: 64Mi
-  limits:
-    memory: 256Mi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi

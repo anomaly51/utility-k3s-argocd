@@ -4,5 +4,6 @@ version: 0.1.0
 type: application
 dependencies:
 - name: external-dns
-  version: 1.21.1
-  repository: https://kubernetes-sigs.github.io/external-dns/
+  version: 0.1.0
+  repository: oci://harbor.api-api-api.com/helm-charts
+  alias: platform-external-dns
