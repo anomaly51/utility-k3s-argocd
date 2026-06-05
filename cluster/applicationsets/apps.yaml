@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: workload-apps
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '50'
+spec:
+  goTemplate: true
+  goTemplateOptions:
+  - missingkey=error
+  generators:
+  - git:
+      repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
+      revision: main
+      files:
+      - path: apps/*/Chart.yaml
+  template:
+    metadata:
+      name: "{{ .name }}"
+      namespace: argocd
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{ if eq .name "arc-config" }}52{{ else }}60{{ end }}'
+    spec:
+      project: gitops-apps
+      source:
+        repoURL: https://github.com/anomaly51/utility-k3s-argocd.git
+        targetRevision: main
+        path: "{{ .path.path }}"
+        helm:
+          releaseName: "{{ .name }}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ if eq .name "arc-config" }}arc-systems{{ else if eq .name "argo-workflows" }}argo{{ else if eq .name "grafana-config" }}grafana{{ else }}{{ .name }}{{ end }}'
+      ignoreDifferences:
+      - group: external-secrets.io
+        kind: ExternalSecret
+        jsonPointers:
+        - "/spec/target/deletionPolicy"
+        - "/spec/data/0/remoteRef/conversionStrategy"
+        - "/spec/data/0/remoteRef/decodingStrategy"
+        - "/spec/data/0/remoteRef/metadataPolicy"
+        - "/spec/data/0/remoteRef/nullBytePolicy"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - ServerSideApply=true
+        - SkipDryRunOnMissingResource=true

@@ -1,0 +1,49 @@
+harbor:
+  harborAdminPassword: admin
+  externalURL: https://harbor.api-api-api.com
+  expose:
+    type: ingress
+    tls:
+      enabled: true
+      certSource: secret
+      secret:
+        secretName: harbor-tls-secret
+    ingress:
+      hosts:
+        core: harbor.api-api-api.com
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+        external-dns.alpha.kubernetes.io/hostname: harbor.api-api-api.com
+        external-dns.alpha.kubernetes.io/target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+  persistence:
+    enabled: true
+    persistentVolumeClaim:
+      registry:
+        annotations:
+          argocd.argoproj.io/sync-options: Delete=false,Prune=false
+          helm.sh/resource-policy: keep
+        size: 50Gi
+        storageClass: nfs-client
+      database:
+        annotations:
+          argocd.argoproj.io/sync-options: Delete=false,Prune=false
+          helm.sh/resource-policy: keep
+        size: 2Gi
+        storageClass: nfs-client
+      redis:
+        annotations:
+          argocd.argoproj.io/sync-options: Delete=false,Prune=false
+          helm.sh/resource-policy: keep
+        size: 1Gi
+        storageClass: nfs-client
+      trivy:
+        annotations:
+          argocd.argoproj.io/sync-options: Delete=false,Prune=false
+          helm.sh/resource-policy: keep
+        size: 2Gi
+        storageClass: nfs-client
+  trivy:
+    enabled: true
+  registry:
+    relativeurls: true

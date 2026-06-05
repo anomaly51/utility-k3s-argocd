@@ -1,0 +1,53 @@
+---
+common-app:
+  namespace:
+    create: false
+  images: {}
+  objects:
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: arc-runners
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: arc-systems
+  - apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: arc-github-token
+      namespace: arc-runners
+    spec:
+      data:
+      - remoteRef:
+          key: shared/github
+          property: token
+        secretKey: github_token
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: vault-backend
+      target:
+        creationPolicy: Owner
+        name: arc-github-token
+  - apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: architect-business-bot-ci-telegram
+      namespace: arc-runners
+    spec:
+      data:
+      - remoteRef:
+          key: workload-1/architect-business-bot
+          property: bot_token
+        secretKey: TELEGRAM_BOT_TOKEN
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: vault-backend
+      target:
+        creationPolicy: Owner
+        name: architect-business-bot-ci-telegram
+        template:
+          data:
+            TELEGRAM_CHAT_ID: '794723616'

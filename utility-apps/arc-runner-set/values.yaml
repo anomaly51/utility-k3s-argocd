@@ -1,0 +1,20 @@
+gha-runner-scale-set:
+  githubConfigUrl: https://github.com/anomaly51
+  githubConfigSecret: arc-github-token
+  controllerServiceAccount:
+    namespace: arc-systems
+    name: arc-gha-rs-controller
+  template:
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: utility-k3s-worker-2
+      containers:
+      - name: runner
+        image: ghcr.io/actions/actions-runner:latest
+        command:
+        - "/home/runner/run.sh"
+        envFrom:
+        - secretRef:
+            name: architect-business-bot-ci-telegram
+  containerMode:
+    type: dind
