@@ -64,6 +64,7 @@ prometheus:
       - target_label: cluster
         replacement: utility-k3s
     kubernetes-services:
+      enabled: false
       metric_relabel_configs:
       - target_label: cluster
         replacement: utility-k3s
