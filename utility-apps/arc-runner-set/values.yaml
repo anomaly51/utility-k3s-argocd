@@ -6,6 +6,10 @@ gha-runner-scale-set:
     name: arc-controller-gha-rs-controller
   template:
     spec:
+      hostAliases:
+      - ip: "10.43.122.186"
+        hostnames:
+        - harbor.api-api-api.com
       nodeSelector:
         kubernetes.io/hostname: utility-k3s-worker-2
       containers:
