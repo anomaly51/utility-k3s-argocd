@@ -1,0 +1,59 @@
+replicaCount: 2
+
+image:
+  repository: cloudflare/cloudflared
+  tag: 2026.5.0
+
+metrics: 0.0.0.0:2000
+noAutoupdate: true
+defaultService: https://traefik.kube-system.svc.cluster.local:443
+
+tunnel:
+  id: a6aaa50f-2590-4179-84f2-d0f18bce0587
+  target: a6aaa50f-2590-4179-84f2-d0f18bce0587.cfargotunnel.com
+
+credentials:
+  vaultKey: utility/cloudflared
+
+argocd:
+  enabled: true
+  hostname: argocd-utility.api-api-api.com
+  tlsSecretName: argocd-api-tls-secret
+
+routes:
+  - hostname: argocd-utility.api-api-api.com
+  - hostname: vault.api-api-api.com
+  - hostname: harbor.api-api-api.com
+  - hostname: argo-workflows.api-api-api.com
+  - hostname: prometheus.api-api-api.com
+  - hostname: grafana.api-api-api.com
+  - hostname: loki.api-api-api.com
+  - hostname: argocd-workload-1.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: shisha-guid.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: shisha-guid-api.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: online-shop.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: online-shop-api.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: hermes-agent.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: obsidian-livesync.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: architect-business-bot.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: pets-void.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: pingme-backend.api-api-api.com
+    service: https://192.168.1.215
+  - hostname: uptime-monitor.api-api-api.com
+    service: https://192.168.1.215
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 256Mi

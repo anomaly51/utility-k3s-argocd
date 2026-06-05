@@ -15,7 +15,6 @@ spec:
   - https://grafana.github.io/helm-charts
   - https://helm.releases.hashicorp.com
   - https://helm.goharbor.io
-  - https://helm.elastic.co
   - ghcr.io/actions/actions-runner-controller-charts
   - harbor.api-api-api.com/helm-charts
   destinations:
