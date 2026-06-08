@@ -1,1 +1,15 @@
-gha-runner-scale-set-controller: {}
+gha-runner-scale-set-controller:
+  replicaCount: 2
+  flags:
+    healthProbeBindAddress: ":8081"
+    logLevel: "debug"
+    logFormat: "text"
+    runnerMaxConcurrentReconciles: 4
+    updateStrategy: "immediate"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

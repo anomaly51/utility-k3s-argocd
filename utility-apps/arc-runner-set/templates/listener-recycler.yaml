@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: arc-runner-set-listener-recycler
+  namespace: arc-systems
+  labels:
+    app.kubernetes.io/name: arc-runner-set-listener-recycler
+    app.kubernetes.io/instance: arc-runner-set
+    app.kubernetes.io/part-of: gha-runner-scale-set
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: arc-runner-set-listener-recycler
+  namespace: arc-systems
+  labels:
+    app.kubernetes.io/name: arc-runner-set-listener-recycler
+    app.kubernetes.io/instance: arc-runner-set
+    app.kubernetes.io/part-of: gha-runner-scale-set
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: arc-runner-set-listener-recycler
+  namespace: arc-systems
+  labels:
+    app.kubernetes.io/name: arc-runner-set-listener-recycler
+    app.kubernetes.io/instance: arc-runner-set
+    app.kubernetes.io/part-of: gha-runner-scale-set
+subjects:
+- kind: ServiceAccount
+  name: arc-runner-set-listener-recycler
+  namespace: arc-systems
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: arc-runner-set-listener-recycler
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: arc-runner-set-listener-recycler
+  namespace: arc-systems
+  labels:
+    app.kubernetes.io/name: arc-runner-set-listener-recycler
+    app.kubernetes.io/instance: arc-runner-set
+    app.kubernetes.io/part-of: gha-runner-scale-set
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: arc-runner-set-listener-recycler
+            app.kubernetes.io/instance: arc-runner-set
+            app.kubernetes.io/part-of: gha-runner-scale-set
+        spec:
+          restartPolicy: Never
+          serviceAccountName: arc-runner-set-listener-recycler
+          containers:
+          - name: kubectl
+            image: bitnami/kubectl:1.33.4
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -ec
+            - |
+              kubectl -n arc-systems delete pod \
+                -l app.kubernetes.io/component=runner-scale-set-listener,app.kubernetes.io/instance=arc-runner-set \
+                --ignore-not-found=true
