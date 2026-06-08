@@ -85,3 +85,4 @@ spec:
             - -l
             - app.kubernetes.io/component=runner-scale-set-listener,app.kubernetes.io/instance=arc-runner-set
             - --ignore-not-found=true
+            - --wait=false
