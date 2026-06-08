@@ -73,7 +73,7 @@ spec:
           serviceAccountName: arc-runner-set-listener-recycler
           containers:
           - name: kubectl
-            image: bitnami/kubectl:1.33.4
+            image: rancher/kubectl:v1.33.4
             imagePullPolicy: IfNotPresent
             command:
             - /bin/sh
