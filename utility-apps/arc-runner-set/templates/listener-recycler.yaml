@@ -76,9 +76,12 @@ spec:
             image: rancher/kubectl:v1.33.4
             imagePullPolicy: IfNotPresent
             command:
-            - /bin/sh
-            - -ec
-            - |
-              kubectl -n arc-systems delete pod \
-                -l app.kubernetes.io/component=runner-scale-set-listener,app.kubernetes.io/instance=arc-runner-set \
-                --ignore-not-found=true
+            - kubectl
+            args:
+            - -n
+            - arc-systems
+            - delete
+            - pod
+            - -l
+            - app.kubernetes.io/component=runner-scale-set-listener,app.kubernetes.io/instance=arc-runner-set
+            - --ignore-not-found=true
