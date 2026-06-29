@@ -1,0 +1,302 @@
+app:
+  namespace:
+    create: true
+    name: interviews-tracker
+    annotations:
+      argocd.argoproj.io/sync-options: Delete=false,Prune=false
+  images:
+    frontend:
+      repository: harbor.api-api-api.com/job-application-crm/interviews-tracker-frontend
+      tag: manual-20260629210829
+    api:
+      repository: harbor.api-api-api.com/job-application-crm/interviews-tracker-api
+      tag: manual-20260629210829
+  objects:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: interviews-tracker-frontend
+      namespace: interviews-tracker
+      labels:
+        app: interviews-tracker-frontend
+    spec:
+      type: ClusterIP
+      selector:
+        app: interviews-tracker-frontend
+      ports:
+      - name: http
+        port: 80
+        targetPort: 80
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: interviews-tracker-api
+      namespace: interviews-tracker
+      labels:
+        app: interviews-tracker-api
+    spec:
+      type: ClusterIP
+      selector:
+        app: interviews-tracker-api
+      ports:
+      - name: http
+        port: 80
+        targetPort: 8000
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: interviews-tracker-cassandra
+      namespace: interviews-tracker
+      labels:
+        app: interviews-tracker-cassandra
+    spec:
+      clusterIP: None
+      selector:
+        app: interviews-tracker-cassandra
+      ports:
+      - name: cql
+        port: 9042
+        targetPort: 9042
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: interviews-tracker
+      namespace: interviews-tracker
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+    spec:
+      ingressClassName: traefik
+      tls:
+      - hosts:
+        - interviews-tracker.api-api-api.com
+        secretName: interviews-tracker-tls
+      rules:
+      - host: interviews-tracker.api-api-api.com
+        http:
+          paths:
+          - path: /applications
+            pathType: Prefix
+            backend:
+              service:
+                name: interviews-tracker-api
+                port:
+                  number: 80
+          - path: /stats
+            pathType: Prefix
+            backend:
+              service:
+                name: interviews-tracker-api
+                port:
+                  number: 80
+          - path: /imports
+            pathType: Prefix
+            backend:
+              service:
+                name: interviews-tracker-api
+                port:
+                  number: 80
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: interviews-tracker-api
+                port:
+                  number: 80
+          - path: /redoc
+            pathType: Prefix
+            backend:
+              service:
+                name: interviews-tracker-api
+                port:
+                  number: 80
+          - path: /openapi.json
+            pathType: Exact
+            backend:
+              service:
+                name: interviews-tracker-api
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: interviews-tracker-frontend
+                port:
+                  number: 80
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: interviews-tracker-frontend
+      namespace: interviews-tracker
+      labels:
+        app: interviews-tracker-frontend
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: interviews-tracker-frontend
+      template:
+        metadata:
+          labels:
+            app: interviews-tracker-frontend
+        spec:
+          containers:
+          - name: frontend
+            image: __IMAGE_frontend__
+            imagePullPolicy: IfNotPresent
+            ports:
+            - name: http
+              containerPort: 80
+            readinessProbe:
+              httpGet:
+                path: /health
+                port: 80
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 3
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: 80
+              initialDelaySeconds: 10
+              periodSeconds: 20
+              timeoutSeconds: 3
+            resources:
+              requests:
+                cpu: 25m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: interviews-tracker-api
+      namespace: interviews-tracker
+      labels:
+        app: interviews-tracker-api
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: interviews-tracker-api
+      template:
+        metadata:
+          labels:
+            app: interviews-tracker-api
+        spec:
+          containers:
+          - name: api
+            image: __IMAGE_api__
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: APP_ENVIRONMENT
+              value: production
+            - name: APP_STORAGE_BACKEND
+              value: cassandra
+            - name: APP_CASSANDRA_HOSTS
+              value: interviews-tracker-cassandra
+            - name: APP_CASSANDRA_PORT
+              value: "9042"
+            - name: APP_CASSANDRA_KEYSPACE
+              value: interview_tracker
+            - name: APP_CASSANDRA_LOCAL_DATACENTER
+              value: datacenter1
+            - name: APP_CORS_ORIGINS
+              value: https://interviews-tracker.api-api-api.com
+            - name: APP_SEED_SAMPLE_DATA
+              value: "true"
+            ports:
+            - name: http
+              containerPort: 8000
+            readinessProbe:
+              httpGet:
+                path: /health
+                port: 8000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 3
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: 8000
+              initialDelaySeconds: 30
+              periodSeconds: 20
+              timeoutSeconds: 3
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 768Mi
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: interviews-tracker-cassandra
+      namespace: interviews-tracker
+      labels:
+        app: interviews-tracker-cassandra
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: interviews-tracker-cassandra
+      serviceName: interviews-tracker-cassandra
+      template:
+        metadata:
+          labels:
+            app: interviews-tracker-cassandra
+        spec:
+          containers:
+          - name: cassandra
+            image: cassandra:5.0
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: CASSANDRA_CLUSTER_NAME
+              value: InterviewTrackerCluster
+            - name: CASSANDRA_DC
+              value: datacenter1
+            - name: CASSANDRA_RACK
+              value: rack1
+            - name: CASSANDRA_ENDPOINT_SNITCH
+              value: GossipingPropertyFileSnitch
+            - name: MAX_HEAP_SIZE
+              value: 512M
+            - name: HEAP_NEWSIZE
+              value: 100M
+            ports:
+            - name: cql
+              containerPort: 9042
+            readinessProbe:
+              tcpSocket:
+                port: 9042
+              initialDelaySeconds: 60
+              periodSeconds: 10
+              timeoutSeconds: 5
+            livenessProbe:
+              tcpSocket:
+                port: 9042
+              initialDelaySeconds: 120
+              periodSeconds: 30
+              timeoutSeconds: 5
+            resources:
+              requests:
+                cpu: 250m
+                memory: 1Gi
+              limits:
+                memory: 2Gi
+            volumeMounts:
+            - name: data
+              mountPath: /var/lib/cassandra
+      volumeClaimTemplates:
+      - metadata:
+          name: data
+          annotations:
+            argocd.argoproj.io/sync-options: Delete=false,Prune=false
+            helm.sh/resource-policy: keep
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          storageClassName: nfs-client
+          resources:
+            requests:
+              storage: 10Gi

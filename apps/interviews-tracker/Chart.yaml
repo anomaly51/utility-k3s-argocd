@@ -1,0 +1,9 @@
+apiVersion: v2
+name: interviews-tracker
+version: 0.1.0
+type: application
+dependencies:
+- name: app
+  version: 0.4.3
+  repository: oci://harbor.api-api-api.com/helm-charts
+  alias: app
