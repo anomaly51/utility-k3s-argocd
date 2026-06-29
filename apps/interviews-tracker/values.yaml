@@ -12,7 +12,7 @@ app:
       tag: manual-20260629210829
     api:
       repository: harbor.api-api-api.com/job-application-crm/interviews-tracker-api
-      tag: manual-20260629210829
+      tag: manual-20260629212453
   objects:
   - apiVersion: v1
     kind: Service
