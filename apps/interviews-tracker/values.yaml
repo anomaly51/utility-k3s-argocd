@@ -4,6 +4,8 @@ app:
     name: interviews-tracker
     annotations:
       argocd.argoproj.io/sync-options: Delete=false,Prune=false
+  registryPullSecret:
+    enabled: true
   images:
     frontend:
       repository: harbor.api-api-api.com/job-application-crm/interviews-tracker-frontend
@@ -140,6 +142,8 @@ app:
           labels:
             app: interviews-tracker-frontend
         spec:
+          imagePullSecrets:
+          - name: harbor-pull-secret
           containers:
           - name: frontend
             image: __IMAGE_frontend__
@@ -184,6 +188,8 @@ app:
           labels:
             app: interviews-tracker-api
         spec:
+          imagePullSecrets:
+          - name: harbor-pull-secret
           containers:
           - name: api
             image: __IMAGE_api__
