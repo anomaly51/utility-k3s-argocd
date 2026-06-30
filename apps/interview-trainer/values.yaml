@@ -8,14 +8,14 @@ app:
       argocd.argoproj.io/sync-options: Delete=false,Prune=false
   image:
     repository: harbor.api-api-api.com/job-application-crm/interview-trainer
-    tag: sha-2e279eda75d5
+    tag: sha-944bae164647
   registryPullSecret:
     enabled: true
   selectorLabels:
     app: interview-trainer
   ports:
-  - name: http
-    containerPort: 3000
+    - name: http
+      containerPort: 3000
   service:
     enabled: true
     port: 80
@@ -31,7 +31,7 @@ app:
     size: 1Gi
     storageClassName: nfs-client
     accessModes:
-    - ReadWriteOnce
+      - ReadWriteOnce
     annotations:
       argocd.argoproj.io/sync-options: Delete=false,Prune=false
       helm.sh/resource-policy: keep
