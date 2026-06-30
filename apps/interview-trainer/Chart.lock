@@ -1,0 +1,6 @@
+dependencies:
+- name: app
+  repository: oci://harbor.api-api-api.com/helm-charts
+  version: 0.4.3
+digest: sha256:ce6acbd4dc183328756952e6879295c738e799b6c98f82f4cb17d020bad72c76
+generated: "2026-06-30T20:27:06.810729+03:00"
