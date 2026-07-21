@@ -1,7 +1,7 @@
 gha-runner-scale-set:
   githubConfigUrl: https://github.com/anomaly51
   githubConfigSecret: arc-github-token
-  maxRunners: 8
+  maxRunners: 2
   minRunners: 2
   scaleSetLabels:
   - arc-runner-set
