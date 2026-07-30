@@ -1725,14 +1725,16 @@ app:
               cd /workspace/gitops-repo; git config --global user.name "Argo Workflows";
               git config --global user.email "argo@devops.local"; REPO_URL="https://github.com/anomaly51/{{inputs.parameters.cluster-name}}-argocd.git";
               sed -i "s|https://github.com/your-org/your-gitops-repo.git|${REPO_URL}|g"
-              bootstrap/root-application.yaml cluster/project.yaml; git add bootstrap/root-application.yaml
+              bootstrap/root-application.yaml cluster/project.yaml; sed -i "s|project: default|project:
+              gitops-apps|" bootstrap/root-application.yaml; git add bootstrap/root-application.yaml
               cluster/project.yaml; git diff --cached --quiet || git commit -m "chore:
               configure Argo CD repository"; git push origin main; export KUBECONFIG=/workspace/kube/config;
               kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply
               -f -; kubectl apply --server-side -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml;
               kubectl wait --for condition=Established crd/applications.argoproj.io
               --timeout=120s; kubectl wait --for condition=Established crd/appprojects.argoproj.io
-              --timeout=120s; kubectl apply -f /workspace/gitops-repo/bootstrap/root-application.yaml;'
+              --timeout=120s; kubectl apply -f /workspace/gitops-repo/cluster/project.yaml;
+              kubectl apply -f /workspace/gitops-repo/bootstrap/root-application.yaml;'
             command:
             - sh
             - "-c"
