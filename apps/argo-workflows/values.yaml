@@ -2144,6 +2144,32 @@ app:
         volumes:
         - emptyDir: {}
           name: workspace
+  - apiVersion: argoproj.io/v1alpha1
+    kind: Workflow
+    metadata:
+      name: provision-general-1
+      namespace: argo-workflows
+      annotations:
+        argocd.argoproj.io/sync-wave: '100'
+    spec:
+      workflowTemplateRef:
+        name: terraform-apply-k3s-cluster-argocd
+      arguments:
+        parameters:
+        - name: cluster-name
+          value: general-1
+        - name: target-nodes
+          value: '["machine-1", "machine-2"]'
+        - name: master-count
+          value: '1'
+        - name: worker-count
+          value: '3'
+        - name: cores
+          value: '2'
+        - name: memory
+          value: '2048'
+        - name: disk-size
+          value: '20'
   - apiVersion: external-secrets.io/v1
     kind: ExternalSecret
     metadata:
