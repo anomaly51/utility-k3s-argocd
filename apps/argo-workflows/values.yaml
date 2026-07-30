@@ -956,7 +956,7 @@ app:
     - apiGroups:
       - argoproj.io
       resources:
-      - taskresults
+      - workflowtaskresults
       verbs:
       - create
       - patch
@@ -1464,7 +1464,7 @@ app:
               && terraform destroy -auto-approve || true; fi; exit $exit_code' EXIT;
               git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf
               "https://github.com/"; cd /workspace/tf-repo/envs/shared/{{inputs.parameters.cluster-name}};
-              bash ../../../scripts/terraform-init-minio.sh; terraform apply -auto-approve;
+              sh ../../../scripts/terraform-init-minio.sh; terraform apply -auto-approve;
             command:
             - sh
             - "-c"
@@ -1637,7 +1637,7 @@ app:
               && terraform destroy -auto-approve || true; fi; exit $exit_code' EXIT;
               git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf
               "https://github.com/"; cd /workspace/tf-repo/envs/shared/{{inputs.parameters.cluster-name}};
-              bash ../../../scripts/terraform-init-minio.sh; terraform apply -auto-approve;
+              sh ../../../scripts/terraform-init-minio.sh; terraform apply -auto-approve;
             command:
             - sh
             - "-c"
@@ -1756,7 +1756,7 @@ app:
               apk add --no-cache git; cd /workspace/tf-repo; git config --global user.name
               "Argo Workflows"; git config --global user.email "argo@devops.local";
               git add envs/shared/{{inputs.parameters.cluster-name}}/; git commit
-              -m "feat: terraform apply and Argo CD init for cluster {{inputs.parameters.cluster-name}}";
+              -m "feat: terraform apply and Argo CD init for cluster {{inputs.parameters.cluster-name}} [skip ci]";
               git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf
               "https://github.com/"; git push origin main;'
             command:
@@ -1880,7 +1880,7 @@ app:
               set -e
               git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf "https://github.com/"
               cd /workspace/repo/envs/shared/{{inputs.parameters.vm-name}}
-              bash ../../../scripts/terraform-init-minio.sh
+              sh ../../../scripts/terraform-init-minio.sh
               terraform apply -auto-approve
             command:
             - sh
@@ -1975,7 +1975,7 @@ app:
               set -e
               git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf "https://github.com/"
               cd /workspace/repo/envs/shared/{{inputs.parameters.cluster-name}}
-              bash ../../../scripts/terraform-init-minio.sh
+              sh ../../../scripts/terraform-init-minio.sh
               terraform destroy -auto-approve
             command:
             - sh
@@ -2090,7 +2090,7 @@ app:
               set -e
               git config --global url."https://x-access-token:${GIT_TOKEN_P1}${GIT_TOKEN_P2}@github.com/".insteadOf "https://github.com/"
               cd /workspace/repo/envs/shared/{{inputs.parameters.vm-name}}
-              bash ../../../scripts/terraform-init-minio.sh
+              sh ../../../scripts/terraform-init-minio.sh
               terraform destroy -auto-approve
             command:
             - sh
@@ -2144,6 +2144,24 @@ app:
         volumes:
         - emptyDir: {}
           name: workspace
+  - apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: github-token
+      namespace: argo-workflows
+    spec:
+      data:
+      - remoteRef:
+          key: shared/github
+          property: token
+        secretKey: token
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: vault-backend
+      target:
+        creationPolicy: Owner
+        name: github-token
   - apiVersion: external-secrets.io/v1
     kind: ExternalSecret
     metadata:
