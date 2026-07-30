@@ -1487,7 +1487,8 @@ app:
             - set -e; trap 'exit_code=$?; if [ $exit_code -ne 0 ]; then echo "⚠️ run-ansible
               failed! Destroying cluster..."; cd /workspace/tf-repo/envs/shared/{{inputs.parameters.cluster-name}}
               && terraform destroy -auto-approve || true; fi; exit $exit_code' EXIT;
-              apk add --no-cache git ansible openssh-client py3-pip py3-requests jq;
+              apk add --no-cache --upgrade expat; apk add --no-cache git ansible openssh-client
+              py3-pip py3-requests jq;
               pip3 install proxmoxer --break-system-packages || pip3 install proxmoxer;
               ansible-galaxy collection install community.proxmox; mkdir -p ~/.ssh;
               printf '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\nQyNTUxOQAAACD5YK+hwQw+eyIBAEdg/nTJ4/Lv9iLdbqPTpKoH2lUIpwAAAJAa/POCGvzz\nggAAAAtzc2gtZWQyNTUxOQAAACD5YK+hwQw+eyIBAEdg/nTJ4/Lv9iLdbqPTpKoH2lUIpw\nAAAEDIuAdzJk3z34U/O5FvZ4zh2JdiBcj2elF6RNyI0uFG6flgr6HBDD57IgEAR2D+dMnj\n8u/2It1uo9OkqgfaVQinAAAACnByb3htb3gtdm0BAgM=\n-----END
@@ -1660,7 +1661,8 @@ app:
             - set -e; trap 'exit_code=$?; if [ $exit_code -ne 0 ]; then echo "⚠️ run-ansible
               failed! Destroying cluster..."; cd /workspace/tf-repo/envs/shared/{{inputs.parameters.cluster-name}}
               && terraform destroy -auto-approve || true; fi; exit $exit_code' EXIT;
-              apk add --no-cache git ansible openssh-client py3-pip py3-requests jq;
+              apk add --no-cache --upgrade expat; apk add --no-cache git ansible openssh-client
+              py3-pip py3-requests jq;
               pip3 install proxmoxer --break-system-packages || pip3 install proxmoxer;
               ansible-galaxy collection install community.proxmox; mkdir -p ~/.ssh;
               printf '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\nQyNTUxOQAAACD5YK+hwQw+eyIBAEdg/nTJ4/Lv9iLdbqPTpKoH2lUIpwAAAJAa/POCGvzz\nggAAAAtzc2gtZWQyNTUxOQAAACD5YK+hwQw+eyIBAEdg/nTJ4/Lv9iLdbqPTpKoH2lUIpw\nAAAEDIuAdzJk3z34U/O5FvZ4zh2JdiBcj2elF6RNyI0uFG6flgr6HBDD57IgEAR2D+dMnj\n8u/2It1uo9OkqgfaVQinAAAACnByb3htb3gtdm0BAgM=\n-----END
