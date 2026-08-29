@@ -1,0 +1,34 @@
+gha-runner-scale-set:
+  githubConfigUrl: https://github.com/anomaly51
+  githubConfigSecret: arc-github-token
+  runnerGroup: Juggluco Deploy
+  runnerScaleSetName: juggluco-deploy
+  maxRunners: 1
+  minRunners: 0
+  scaleSetLabels:
+    - juggluco-deploy
+  controllerServiceAccount:
+    namespace: arc-systems
+    name: arc-controller-gha-rs-controller
+  listenerTemplate:
+    spec:
+      containers:
+        - name: listener
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+  template:
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: utility-k3s-worker-2
+      containers:
+        - name: runner
+          image: ghcr.io/actions/actions-runner:latest
+          command:
+            - /home/runner/run.sh
+  containerMode:
+    type: dind
