@@ -1,0 +1,5 @@
+apiVersion: v2
+name: ci-runner-storage
+description: Guarded online capacity expansion for the CI worker.
+type: application
+version: 0.1.0
