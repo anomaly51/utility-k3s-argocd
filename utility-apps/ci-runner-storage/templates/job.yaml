@@ -27,7 +27,7 @@ spec:
           args:
             - |
               # Execute the checked-in script with the host's existing LVM tools.
-              nsenter --target 1 --mount --uts --ipc --net --pid -- /usr/bin/python3 - < /script/expand.py
+              nsenter --target 1 --mount --uts --ipc --net --pid --root --wd -- /usr/bin/python3 - < /script/expand.py
           securityContext:
             privileged: true
             readOnlyRootFilesystem: true
