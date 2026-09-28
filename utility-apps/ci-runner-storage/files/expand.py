@@ -35,7 +35,7 @@ def require(condition, message):
 def require_blank_disk(disk):
     require(not run("lsblk", "-nr", "-o", "MOUNTPOINTS", disk), "Disk is mounted")
     require(len(run("lsblk", "-nr", "-o", "NAME", disk).splitlines()) == 1, "Disk has child devices")
-    require(not run("wipefs", "--no-act", "--noheadings", "-o", "TYPE", disk), "Disk has existing signatures")
+    require(not run("wipefs", "--no-act", "--noheadings", "--output", "TYPE", disk), "Disk has existing signatures")
     with open(disk, "rb", buffering=0) as source:
         require(not any(source.read(1024**2)), "Disk header is not blank")
         source.seek(DISK_BYTES - 1024**2)
